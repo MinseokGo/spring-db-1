@@ -1,9 +1,13 @@
 package hello.jdbc.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 public class Member {
 
