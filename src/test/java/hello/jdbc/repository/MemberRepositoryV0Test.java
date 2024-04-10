@@ -7,33 +7,35 @@ import hello.jdbc.domain.Member;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
 class MemberRepositoryV0Test {
 
-    MemberRepositoryV0 memberRepositoryV0 = new MemberRepositoryV0();
+    MemberRepositoryV0 repository = new MemberRepositoryV0();
 
     @Test
+    @DisplayName("CRUD 테스트 - 멤버의 CRUD 기능 테스트")
     void crud() throws SQLException {
         // save
         Member member = Member.valueOf("memberV100", 10000);
-        memberRepositoryV0.save(member);
+        repository.save(member);
 
         // findById
-        Member findMember = memberRepositoryV0.findById(member.getMemberId());
+        Member findMember = repository.findById(member.getMemberId());
         log.info("findMember={}", findMember.toString());
         assertThat(findMember).isEqualTo(member);
 
         // update
-        memberRepositoryV0.update(member.getMemberId(), 20000);
-        Member updatedMember = memberRepositoryV0.findById(member.getMemberId());
+        repository.update(member.getMemberId(), 20000);
+        Member updatedMember = repository.findById(member.getMemberId());
         assertThat(updatedMember.getMoney()).isEqualTo(20000);
 
         // delete
-        memberRepositoryV0.delete(member.getMemberId());
+        repository.delete(member.getMemberId());
         assertThatThrownBy(
-                () -> memberRepositoryV0.findById(member.getMemberId()))
+                () -> repository.findById(member.getMemberId()))
                 .isInstanceOf(NoSuchElementException.class);
     }
 }
