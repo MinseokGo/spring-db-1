@@ -1,1 +1,0 @@
-²13:53:21.687 [Test worker] INFO hello.jdbc.connection.DBConnectionUtil -- get connection=conn0: url=jdbc:h2:tcp://localhost/~/test user=SA class=class org.h2.jdbc.JdbcConnection
