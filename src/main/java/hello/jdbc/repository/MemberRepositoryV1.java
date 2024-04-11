@@ -9,7 +9,6 @@ import java.util.NoSuchElementException;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.support.JdbcUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,24 +34,22 @@ public class MemberRepositoryV1 {
 
     public Member findById(String memberId) throws SQLException {
         String sql = "select * from member where member_id = ?";
-        ResultSet resultSet = null;
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, memberId);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return Member.valueOf(
-                        resultSet.getString("member_id"),
-                        resultSet.getInt("money"));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Member.valueOf(
+                            resultSet.getString("member_id"),
+                            resultSet.getInt("money"));
+                }
             }
             throw new NoSuchElementException("member not found memberId = " + memberId);
         } catch (SQLException e) {
             log.error("Database error!!", e);
             throw e;
-        } finally {
-            JdbcUtils.closeResultSet(resultSet);
         }
     }
 
