@@ -39,14 +39,7 @@ public class MemberRepositoryV2 {
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, memberId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Member.valueOf(
-                            resultSet.getString("member_id"),
-                            resultSet.getInt("money"));
-                }
-            }
-            throw new NoSuchElementException("member not found memberId = " + memberId);
+            return findMember(statement);
         } catch (SQLException e) {
             log.error("Database error!!", e);
             throw e;
@@ -58,17 +51,21 @@ public class MemberRepositoryV2 {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, memberId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Member.valueOf(
-                            resultSet.getString("member_id"),
-                            resultSet.getInt("money"));
-                }
-            }
-            throw new NoSuchElementException("member not found memberId = " + memberId);
+            return findMember(statement);
         } catch (SQLException e) {
             log.error("Database error!!", e);
             throw e;
+        }
+    }
+
+    private Member findMember(PreparedStatement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return Member.valueOf(
+                        resultSet.getString("member_id"),
+                        resultSet.getInt("money"));
+            }
+            throw new NoSuchElementException("member not found");
         }
     }
 
@@ -78,9 +75,7 @@ public class MemberRepositoryV2 {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, money);
-            statement.setString(2, memberId);
-            statement.executeUpdate();
+            setQueryStatementForUpdate(statement, memberId, money);
         } catch (SQLException e) {
             log.info("Database error!!", e);
             throw e;
@@ -91,13 +86,19 @@ public class MemberRepositoryV2 {
         String sql = "update member set money=? where member_id=?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, money);
-            statement.setString(2, memberId);
-            statement.executeUpdate();
+            setQueryStatementForUpdate(statement, memberId, money);
         } catch (SQLException e) {
             log.info("Database error!!", e);
             throw e;
         }
+    }
+
+    private void setQueryStatementForUpdate(PreparedStatement statement, String memberId, int money)
+            throws SQLException {
+
+        statement.setInt(1, money);
+        statement.setString(2, memberId);
+        statement.executeUpdate();
     }
 
     public void delete(String memberId) throws SQLException {
