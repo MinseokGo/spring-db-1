@@ -29,8 +29,8 @@ public class MemberServiceV3_3 {
         memberRepository.update(toId, toMember.getMoney() + money);
     }
 
-    private void validation(Member toMember) {
-        if (toMember.getMemberId().equals("ex")) {
+    private void validation(Member other) {
+        if (other.getMemberId().equals("ex")) {
             throw new IllegalStateException("이체 중 예외 발생");
         }
     }
